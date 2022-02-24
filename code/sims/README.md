@@ -25,29 +25,42 @@ chmod u+x *.sh
 ```
 If you aren't running on a Slurm scheduler, make sure to edit the appropriate lines (flagged in each file). You can run this code locally, but it will take some time.
 
-Once you have run the simulations, the following code reproduces all plots and tables:
+Once you have run the simulations and copied the results to directory `sim_output`, the following code reproduces all plots and tables:
 * `create_all_plots.sh`: creates all plots for the main manuscript and supplement
 * `create_plots.sh`: run `create_plots.R` for a given scenario
 * `create_plots.R`: load in the results and create figures for variable selection and prediction performance
 * `create_roc_curves.sh`: run `create_roc_curves.R` for a given scenario
 * `create_roc_curves.R`: create figures with ROC curves for each estimation procedure and scenario
 
+```{bash}
+./create_all_plots.sh
+```
+
 ## Properties of our extrinsic selector with knockoffs and variable screens
 
-The following code will replicate the results in Section 2.7 of the Supplementary Material (Figures S5--S8).
+The following code will replicate the results in Section 2.7 of the Supplementary Material (Figures S14--S18).
 
 The simulation uses the following files:
-* `submit_all_null_investigation.sh`: Submit all simulations for this section.
-* `submit_null_investigation.sh`: Batch submission of a group of jobs to a Slurm scheduler.
-* `investigate_null_properties.R`: the main R script for this simulation. Runs the simulation `nreps_per_job` times for a specified set of parameters.
-* `investigate_null_once.R`: Runs the simulation a single time for a specified set of parameters.
+* `submit_all_ms_sims_ranks.sh`: Submit all simulations for this section.
+* `submit_sim_rank_select.sh`: Batch submission of a group of jobs to a Slurm scheduler.
+* `run_sim_rank_select.R`: the main R script for this simulation. Runs the simulation `nreps_per_job` times for a specified set of parameters.
+* `rank_once.R`: Runs the simulation a single time for a specified set of parameters.
 * `gen_data.R`: Generate a dataset.
-* `run_ests.R`: Run a single estimator (SuperLearner, random forests, logistic regression, GAMs, etc.) with or without cross-fitting and sample-splitting
+* `sl_knockoff_stats.R`: Knockoff statistic for Super Learner-based knockoffs.
 * `utils.R`: Utility functions.
 
 Running the following code will submit all of the simulations to a Slurm scheduler:
 ```{bash}
 chmod u+x *.sh
-./submit_all_null_investigation.sh
+./submit_all_ms_sims_ranks.sh
 ```
 If you aren't running on a Slurm scheduler, make sure to edit the appropriate lines (flagged in each file). You can run this code locally, but it will take some time.
+
+Once you have run the simulations and copied the results to directory `sim_output`, the following code reproduces all plots and tables:
+* `create_all_ranks_plots.sh`: creates all plots for the supplement
+* `create_ranks_plots.sh`: run `create_ranks_plots.R` for a given scenario
+* `create_ranks_plots.R`: load in the results and create figures
+
+```{bash}
+./create_all_ranks_plots.sh
+```
