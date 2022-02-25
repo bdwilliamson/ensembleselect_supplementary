@@ -2,7 +2,7 @@
 
 This repository contains code to reproduce the analyses in ["Flexible variable selection in the presence of missing data"](https://arxiv.org/abs/<FINISH THIS>) by Williamson and Huang (2022+). All analyses were implemented in the freely available R programming language; specifically, version 4.0.2. All analyses use the R package `flevr` version 0.0.2.
 
-Since the data are not publicly available, we cannot reproduce exactly the results from the data analysis. However, can can run the data analysis on a dataset inspired by the data analyzed in the manuscript; this dataset is included in the `flevr` package. The code in the `exact_ms_code` subdirectory is exactly the code used to analyze the data for the manuscript (and supporting information).
+Since the data are not publicly available, we cannot reproduce exactly the results from the data analysis. However, can can run the data analysis on a dataset inspired by the data analyzed in the manuscript; this dataset is included in the `flevr` package. The code in the `exact_ms_code` subdirectory is (almost) exactly the code used to analyze the data for the manuscript (and supporting information); we have made several minor adjustments to preserve privacy of the individual labs that developed biomarkers for this dataset.
 
 The R scripts contain the code necessary to do assess the performance of the variable selection procedures and to select the final set of variables:
 * `clean_data.R`: clean two analysis datasets (one for each outcome)
