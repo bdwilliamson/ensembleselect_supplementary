@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# load modules
-ml fhR/4.0.2-foss-2019b
-ml jbigkit
-
 # submit all sims for the ms
 # --------------------------------------------------------------------------------------------------------
 # SETTING A: Outcome regression is a linear model, X ~ Normal

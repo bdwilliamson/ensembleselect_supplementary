@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# load modules
-ml fhR/4.0.2-foss-2019b
-ml jbigkit
-
 # submit all sims for the ms
 # first, compute the number of jobs in the job array (if I haven't passed one in)
 if [ "${10}" == "" ]; then
@@ -14,7 +10,8 @@ else
   arry=${10}
 fi
 
-io_prefix="/home/$8"
+# edit the next line to point to your preferred i/o directory
+io_prefix="<path to preferred i/o directory>/$8"
 fi
 mkdir -p $io_prefix
 io_file="$io_prefix/slurm-%A_%a.out"
