@@ -1,6 +1,6 @@
 # Running the numerical experiments for the `flevr` paper
 
-This repository contains code to reproduce the analyses in ["Flexible variable selection in the presence of missing data"](https://arxiv.org/abs/<FINISH THIS>) by Williamson and Huang (2022+). All analyses were implemented in the freely available R programming language; specifically, version 4.0.2. All analyses use the R package `flevr` version 0.0.2.
+This repository contains code to reproduce the analyses in ["Flexible variable selection in the presence of missing data"](https://arxiv.org/abs/2202.12989) by Williamson and Huang (2022+). All analyses were implemented in the freely available R programming language; specifically, version 4.0.2. All analyses use the R package `flevr` version 0.0.2.
 
 The numerical experiments consist of two sections. First, we consider the properties of our proposal under four data-generating mechanisms. Second, we investigate the properties of extrinsic selection incorporating both knockoffs and variable screens.
 
