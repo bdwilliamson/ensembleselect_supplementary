@@ -5,11 +5,16 @@
 # -----------------------------------------------------------
 # create plots from linear + normal + nested (A)
 # -----------------------------------------------------------
-main_sim_names=("binomial-probit-linear-normal-nested" "binomial-probit-nonlinear-nonnormal-nested")
+main_sim_names=("binomial-probit-linear-normal-nested" "nonlinear-normal-correlated")
 for sim_name in ${main_sim_names[@]}; do
   ./create_plots.sh $sim_name 100 1 1000 0
+  ./create_plots.sh $sim_name 100 1 1000 0
 done
-supp_sim_names=("binomial-probit-linear-nonnormal-nested" "binomial-probit-nonlinear-normal-nested")
+supp_sim_names=("linear-normal-correlated" "linear-normal-uncorrelated" \
+                "nonlinear-normal-weak-uncorrelated" \
+                "binomial-probit-linear-nonnormal-nested" \
+                "binomial-probit-nonlinear-normal-nested" \
+                "binomial-probit-nonlinear-nonnormal-nested")
 for sim_name in ${supp_sim_names[@]}; do
   ./create_plots.sh $sim_name 100 1 1000 1
 done

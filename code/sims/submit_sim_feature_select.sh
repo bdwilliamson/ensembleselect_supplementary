@@ -24,10 +24,17 @@ io_file="$io_prefix/slurm-%A_%a.out"
 # 5: number of MI reps
 # 6: estimator ('lasso' or 'SL')
 # 7: extra layer ('' or 'SS' or 'knockoffs')
-echo -e \
-  '#!/bin/bash\n Rscript run_sim_feature_select.R --sim-name $1' \
-  '--nreps-total $2 --nreps-per-job $3 --b $4 --m $5 --est-type $6' \
-  '--extra-layer $7' > call_sim_feature_select.sh
+if [[ ${1} =~ "correlated" ]]; then
+  echo -e \
+    '#!/bin/bash\n Rscript investigate_lasso_performance.R --sim-name $1' \
+    '--nreps-total $2 --nreps-per-job $3 --b $4 --m $5 --est-type $6' \
+    '--extra-layer $7' > call_sim_feature_select.sh
+else
+  echo -e \
+    '#!/bin/bash\n Rscript run_sim_feature_select.R --sim-name $1' \
+    '--nreps-total $2 --nreps-per-job $3 --b $4 --m $5 --est-type $6' \
+    '--extra-layer $7' > call_sim_feature_select.sh
+fi
 chmod u+x call_sim_feature_select.sh
 # run the sim
 sbatch --time=7-0 --array=$arry -e $io_file -o $io_file \

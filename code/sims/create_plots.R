@@ -283,8 +283,27 @@ if (!args$all_miss) {
 }
 
 # --------------------------------
-# plots of sensitivity/specificity
+# plots of variable selection performance
 # --------------------------------
+auc_plot <- plot_tib %>%
+  filter(missing_perc %in% miss_vec) %>%
+  ggplot(aes(x = n_fct, y = perf, shape = est_fct)) +
+  geom_point(position = position_dodge(0.8), size = point_size) +
+  geom_hline(aes(yintercept = true_perf), linetype = "dashed") +
+  ylab("Test-set AUC") +
+  xlab("n") +
+  geom_vline(xintercept = c(1.5, 2.5, 3.5), color = "gray85") +
+  scale_shape_manual(values = shapes) +
+  labs(shape = "Estimator") +
+  guides(shape = guide_legend(nrow = 1)) +
+  facet_grid(cols = vars(p), rows = vars(missing), labeller = label_both, scales = "free") +
+  theme(legend.direction = "horizontal", legend.position = "bottom",
+        title = element_text(size = title_text_size), text = element_text(size = axis_text_size),
+        axis.text = element_text(size = axis_text_size),
+        legend.text = element_text(size = lgnd_text_size), legend.title = element_text(size = lgnd_text_size),
+        strip.background = element_blank(), panel.grid.major.y = element_line(color = "gray85"),
+        plot.margin = unit(c(0, 2, 0, 0), "cm"))
+
 sens_plot <- plot_tib %>%
   filter(missing_perc %in% miss_vec) %>%
   ggplot(aes(x = n_fct, y = sensitivity, shape = est_fct)) +
@@ -328,9 +347,10 @@ select_legend <- get_legend(sens_plot +
 select_title <- ggdraw() + draw_label(bquote("Variable selection performance"), size = title_text_size)
 select_plot <- plot_grid(select_title,
                          plot_grid(
+                           auc_plot + theme(legend.position = "none", plot.margin = unit(c(0, 0, 0, 0), "cm")),
                            sens_plot + theme(legend.position = "none", plot.margin = unit(c(0, 0, 0, 0), "cm")),
                            spec_plot + theme(legend.position = "none", plot.margin = unit(c(0, 0, 0, 0), "cm")),
-                           nrow = 1, ncol = 2, labels = "AUTO"
+                           nrow = 1, ncol = 3, labels = "AUTO"
                          ),
                          select_legend, ncol = 1, nrow = 3,
                          rel_heights = c(.075, 1, .1))
@@ -343,6 +363,24 @@ for (image_type in image_types) {
 
 # separate plots for the supplement
 if (!args$all_miss) {
+  auc_plot <- plot_tib %>%
+    filter(!(missing_perc %in% miss_vec)) %>%
+    ggplot(aes(x = n_fct, y = perf, shape = est_fct)) +
+    geom_point(position = position_dodge(0.8), size = point_size) +
+    geom_hline(aes(yintercept = true_perf), linetype = "dashed") +
+    ylab("Test-set AUC") +
+    xlab("n") +
+    geom_vline(xintercept = c(1.5, 2.5, 3.5), color = "gray85") +
+    scale_shape_manual(values = shapes) +
+    labs(shape = "Estimator") +
+    guides(shape = guide_legend(nrow = 1)) +
+    facet_grid(cols = vars(p), rows = vars(missing), labeller = label_both, scales = "free") +
+    theme(legend.direction = "horizontal", legend.position = "bottom",
+          title = element_text(size = title_text_size), text = element_text(size = axis_text_size),
+          axis.text = element_text(size = axis_text_size),
+          legend.text = element_text(size = lgnd_text_size), legend.title = element_text(size = lgnd_text_size),
+          strip.background = element_blank(), panel.grid.major.y = element_line(color = "gray85"),
+          plot.margin = unit(c(0, 2, 0, 0), "cm"))
   sens_plot <- plot_tib %>%
     filter(!(missing_perc %in% miss_vec)) %>%
     ggplot(aes(x = n_fct, y = sensitivity, shape = est_fct)) +
@@ -386,9 +424,10 @@ if (!args$all_miss) {
   select_title <- ggdraw() + draw_label(bquote("Variable selection performance"), size = title_text_size)
   select_plot <- plot_grid(select_title,
                            plot_grid(
+                             auc_plot + theme(legend.position = "none", plot.margin = unit(c(0, 0, 0, 0), "cm")),
                              sens_plot + theme(legend.position = "none", plot.margin = unit(c(0, 0, 0, 0), "cm")),
                              spec_plot + theme(legend.position = "none", plot.margin = unit(c(0, 0, 0, 0), "cm")),
-                             nrow = 1, ncol = 2, labels = "AUTO"
+                             nrow = 1, ncol = 3, labels = "AUTO"
                            ),
                            select_legend, ncol = 1, nrow = 3,
                            rel_heights = c(.075, 1, .1))
@@ -399,6 +438,70 @@ if (!args$all_miss) {
            device = image_type, units = "in", dpi = 300)
   }
 }
+
+# proportion of times each variable in the active set is selected
+if (grepl("correlated", args$sim_name)) {
+  # I'm only interested in variables 2, 3, 6
+  props_selected_init <- output_tib_fixed_trueperf %>%
+    mutate(has_2 = grepl("2", selected_vars),
+           has_3 = grepl("3", selected_vars),
+           has_6 = grepl("6", selected_vars))
+} else {
+  # I'm interested in variables 1--6
+  props_selected_init <- output_tib_fixed_trueperf %>%
+    mutate(has_1 = grepl("1", selected_vars),
+           has_2 = grepl("2", selected_vars),
+           has_3 = grepl("3", selected_vars),
+           has_4 = grepl("4", selected_vars),
+           has_5 = grepl("5", selected_vars),
+           has_6 = grepl("6", selected_vars))
+}
+props_selected <- props_selected_init %>%
+  pivot_longer(starts_with("has_"), names_to = "variable", values_to = "selected") %>%
+  mutate(variable = gsub("has_", "", variable)) %>%
+  group_by(n, p, missing_perc, estimator_type, extra_layer, variable) %>%
+  summarize(prop = mean(selected), .groups = "drop") %>%
+  mutate(n_fct = factor(n), est_fct = factor(case_when(
+    estimator_type == "lasso" & extra_layer == "none" ~ 1,
+    estimator_type == "SL" & extra_layer == "none" ~ 2,
+    estimator_type == "lasso" & extra_layer == "SS" ~ 3,
+    estimator_type == "SL" & extra_layer == "SS" ~ 4,
+    estimator_type == "lasso" & (extra_layer == "KF" | extra_layer == "knockoffs") ~ 5,
+    estimator_type == "base-SL" & extra_layer == "none" ~ 6,
+    estimator_type == "SPVIM-gFWER" & extra_layer == "none" ~ 7,
+    estimator_type == "SPVIM-PFP" & extra_layer == "none" ~ 8,
+    estimator_type == "SPVIM-FDR" & extra_layer == "none" ~ 9,
+  ), levels = 1:9, labels = c("lasso", "SL", "lasso + SS",
+                              "SL + SS", "lasso + KF", "SL (benchmark)",
+                              "SPVIM + gFWER", "SPVIM + PFP", "SPVIM + FDR"),
+  ordered = TRUE), missing = paste0(round(missing_perc * 100), "%")
+  )
+
+for (i in 1:length(miss_percs)) {
+    prop_plot <- props_selected %>%
+      filter(missing_perc == miss_percs[i]) %>%
+      ggplot(aes(x = n_fct, y = prop, shape = est_fct)) +
+      geom_point(position = position_dodge(0.8), size = point_size) +
+      ylab("Empirical active-set selection probability") +
+      xlab("n") +
+      geom_vline(xintercept = c(1.5, 2.5, 3.5), color = "gray85") +
+      scale_shape_manual(values = shapes) +
+      labs(shape = "Estimator") +
+      guides(shape = guide_legend(nrow = 2)) +
+      facet_grid(cols = vars(variable), rows = vars(p), labeller = label_both, scales = "free") +
+      theme(legend.direction = "horizontal", legend.position = "bottom",
+            title = element_text(size = title_text_size), text = element_text(size = axis_text_size),
+            axis.text = element_text(size = axis_text_size),
+            legend.text = element_text(size = lgnd_text_size), legend.title = element_text(size = lgnd_text_size),
+            strip.background = element_blank(), panel.grid.major.y = element_line(color = "gray85"),
+            plot.margin = unit(c(0, 2, 0, 0), "cm"))
+
+    for (image_type in image_types) {
+      ggsave(filename = paste0(plots_dir, args$sim_name, "_select-props_", round(miss_percs[i] * 100), ".", image_type),
+             plot = prop_plot, width = fig_width * 1.25, height = fig_height,
+             device = image_type, units = "in", dpi = 300)
+    }
+  }
 
 # table with average estimated AUC and true AUC for each dgm and estimator
 aucs <- output_tib %>%
