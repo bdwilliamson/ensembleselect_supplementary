@@ -153,7 +153,7 @@ current_seed <- job_id
 print(current_seed)
 set.seed(current_seed)
 system.time(sim_output <- sapply(1:args$nreps_per_job, function(i)
-  do_one(indx = i + args$nreps_per_job * (current_dynamic_args$mc_id - 1),
+  select_once(indx = i + args$nreps_per_job * (current_dynamic_args$mc_id - 1),
          n = current_dynamic_args$n, p = current_dynamic_args$p,
          family = "binomial", link = "probit",
          linear = !grepl("nonlinear", args$sim_name),

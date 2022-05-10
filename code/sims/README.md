@@ -6,12 +6,13 @@ The numerical experiments consist of two sections. First, we consider the proper
 
 ## Properties under various data-generating mechanisms
 
-The following code will replicate the results in Section 4 of the main manuscript (Figures 1--4) and Sections 2.4--2.5 of the Supplementary Material (Figures S1--S12).
+The following code will replicate the results in Section 4 of the main manuscript (Figures 1 and 2) and Section 2 of the Supplementary Material (Figures S1--S35).
 
 The simulation uses the following files:
 * `submit_all_ms_sims.sh`: Submit all simulations for this section.
 * `submit_sim_feature_select.sh`: Batch submission of a group of jobs to a Slurm scheduler.
-* `run_sim_feature_select.R`: the main R script for this simulation. Runs the simulation `nreps_per_job` times for a specified set of parameters.
+* `run_sim_feature_select.R`: the main R script for this simulation, corresponding to Scenarios 1 and 3--5. Runs the simulation `nreps_per_job` times for a specified set of parameters.
+* `investigate_lasso_performance.R`: the second main R script for this simulation, corresponding to Scenarios 2 and 6--8. Runs the simulation `nreps_per_job` times for a specified set of parameters.
 * `select_once.R`: Runs the simulation a single time for a specified set of parameters.
 * `gen_data.R`: Generate a dataset.
 * `fit_extra_layers.R`: Do variable selection based on the specified algorithm (e.g., lasso, lasso + knockoffs, SL).
@@ -38,7 +39,7 @@ Once you have run the simulations and copied the results to directory `sim_outpu
 
 ## Properties of our extrinsic selector with knockoffs and variable screens
 
-The following code will replicate the results in Section 2.7 of the Supplementary Material (Figures S14--S18).
+The following code will replicate the results in Section 2.8 of the Supplementary Material (Figures S36--S41).
 
 The simulation uses the following files:
 * `submit_all_ms_sims_ranks.sh`: Submit all simulations for this section.
